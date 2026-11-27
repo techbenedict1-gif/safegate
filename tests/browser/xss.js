@@ -1,0 +1,22 @@
+const http=require('http');const {chromium}=require('playwright');
+const X='<img src=x onerror="window.__xss=(window.__xss||0)+1">';const Y='"><svg onload="window.__xss=(window.__xss||0)+1">';
+const post=(b)=>new Promise(res=>{const d=JSON.stringify(b);const q=http.request({port:8099,path:'/api/rpc',method:'POST',headers:{'Content-Type':'application/json','Content-Length':Buffer.byteLength(d)}},r=>{const c=[];r.on('data',x=>c.push(x));r.on('end',()=>res(JSON.parse(Buffer.concat(c)||'{}')))});q.end(d)});
+const rpc=async(m,a)=>{const j=await post({method:m,args:a});if(j.error)throw new Error(m+': '+j.error.message);return j.result};
+(async()=>{const tok=(await rpc('setupStaff',{officer:'Ada',pin:'123456',schoolName:'U'+X})).token;
+ await rpc('saveSettings',{token:tok,settings:{smsEnabled:true,parentUpdates:true,securityPhone:'0800'+Y,payInstructions:X}});
+ const A={matric:'CSC/21/001',name:X+'Ben',phone:'0801'+Y,emergency:{name:X,phone:Y}};
+ await rpc('ingest',{student:A,deviceId:'A',items:[{id:'o1',type:'out',t:Date.now(),destination:{text:X+'Afama'},meet:Y,companions:X,expectedReturn:Date.now()-5000,consentLoc:true}]});
+ await rpc('ingest',{student:A,deviceId:'A',items:[{id:'r1',type:'report',t:Date.now(),cat:'unsafe',note:X}]}).catch(()=>{});
+ await rpc('addNote',{token:tok,text:X,matric:A.matric}).catch(e=>console.log(e.message));
+ await rpc('startRollCall',{token:tok,title:X+' Fire',text:Y,minutes:30});
+ await rpc('postNotice',{token:tok,title:X,text:Y,level:'urgent'}).catch(e=>console.log('notice',e.message));
+ const gl=(await rpc('makeGuardianLink',{matric:A.matric,deviceId:'A',label:X})).token;
+ const br=await chromium.launch();const D=await (await br.newContext({viewport:{width:1300,height:900}})).newPage();D.on('dialog',d=>d.accept());
+ await D.goto('http://127.0.0.1:8099/desk');await D.fill('[name=officer]','Ada');await D.fill('[name=pin]','123456');await D.click('form button[type=submit]');await D.waitForSelector('.side .nav');
+ for(const tab of ['live','students','records','rollcall','shift','notices','reports','cases','visitors','places','settings','audit','analytics','inbox']){await D.click('[data-tab='+tab+']').catch(()=>{});await D.waitForTimeout(700)}
+ await D.click('[data-tab=students]');await D.waitForTimeout(500);await D.click('[data-act=student]').catch(()=>{});await D.waitForTimeout(800);
+ await D.evaluate(()=>{window.print=()=>{}});await D.click('[data-act=traceSheet]').catch(()=>{});await D.waitForTimeout(800);
+ const P=await (await br.newContext({viewport:{width:390,height:800}})).newPage();P.on('dialog',d=>d.accept());await P.goto('http://127.0.0.1:8099/guardian.html?t='+gl);await P.waitForTimeout(1500);
+ const S=await (await br.newContext({viewport:{width:390,height:800}})).newPage();S.on('dialog',d=>d.accept());await S.goto('http://127.0.0.1:8099/');await S.waitForTimeout(500);
+ const a=await D.evaluate(()=>window.__xss||0),b=await P.evaluate(()=>window.__xss||0);console.log('XSS fired on desk:',a,' guardian page:',b);
+ await br.close();process.exit(a||b?1:0)})().catch(e=>{console.log('ERR',e.message);process.exit(2)});

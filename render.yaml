@@ -1,0 +1,32 @@
+# SafeGate on Render. A paid plan with a disk is REQUIRED: the free plan sleeps after 15 minutes and wipes its files on every restart,
+# which would delete every student, report and alert.
+services:
+  - type: web
+    name: safegate
+    runtime: node
+    plan: starter
+    buildCommand: node -v
+    startCommand: node server.js
+    healthCheckPath: /api/health
+    autoDeploy: true
+    disk:
+      name: safegate-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: DATA_FILE
+        value: /var/data/db.json
+      - key: TRUST_PROXY
+        value: "1"
+      - key: NODE_ENV
+        value: production
+      - key: OPERATOR_KEY        # your own 20 letters and numbers; it becomes the end of your operator link
+        sync: false
+      - key: ICT_KEY             # your own 20 letters and numbers; it becomes the end of the ICT console link
+        sync: false
+      - key: SMTP_HOST           # optional: feedback emails to you (Gmail: smtp.gmail.com)
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false

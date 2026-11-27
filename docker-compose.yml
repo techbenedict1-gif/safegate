@@ -1,0 +1,28 @@
+# One command: docker compose up -d
+# Set DOMAIN to your real domain (it must point at this server). Caddy gets the HTTPS certificate by itself.
+services:
+  safegate:
+    build: .
+    restart: unless-stopped
+    environment:
+      TRUST_PROXY: "1"            # we are behind Caddy, so trust its X-Forwarded-For
+      PUSH_SUBJECT: "mailto:security@yourschool.edu"
+      # Text messages: uncomment and fill (or put sms.json in the data volume). See DEPLOY.md
+      # SMS_PROVIDER: termii
+      # SMS_API_KEY: ""
+      # SMS_SENDER: SafeGate
+    volumes:
+      - safegate-data:/data
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports: ["80:80", "443:443"]
+    environment:
+      DOMAIN: ${DOMAIN:-localhost}
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+    depends_on: [safegate]
+volumes:
+  safegate-data:
+  caddy-data:

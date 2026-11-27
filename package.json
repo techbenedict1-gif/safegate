@@ -1,0 +1,27 @@
+{
+  "name": "safegate",
+  "version": "13.12.1",
+  "description": "SafeGate: Student Security and Movement Management System. Powered by ResultFlow.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node tests/run-all.js",
+    "loadtest": "node tools/loadtest.js",
+    "test:browser": "node tests/browser/run.js",
+    "doctor": "node tools/doctor.js",
+    "feedback": "bash deploy/termux-feedback.sh"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "UNLICENSED",
+  "private": true,
+  "author": "ResultFlow",
+  "keywords": [
+    "campus",
+    "security",
+    "qr",
+    "pwa",
+    "safety"
+  ]
+}

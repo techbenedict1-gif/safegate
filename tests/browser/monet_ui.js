@@ -1,0 +1,22 @@
+const {chromium}=require('playwright');const B='http://127.0.0.1:8099';const t=(c,m)=>{console.log(c?'ok  ':'FAIL',m);if(!c)process.exitCode=1};
+const op=(o,a)=>fetch(B+'/api/operator',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({key:'k-op',op:o,args:a||{}})}).then(r=>r.json());
+(async()=>{
+ await fetch(B+'/api/rpc',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({method:'setupStaff',args:{officer:'Ada',pin:'123456',schoolName:'Money College',tzOffsetMin:60}})}).catch(()=>{});
+ const br=await chromium.launch();const errs=[];
+ const ctx=await br.newContext({viewport:{width:390,height:800},hasTouch:true,isMobile:true});const S=await ctx.newPage();S.on('pageerror',e=>errs.push(e.message));
+ await S.goto(B+'/');await S.fill('[name=name]','Money One');await S.fill('[name=matric]','MNY/22/0001');await S.fill('[name=phone]','08066620001');await S.fill('[name=en]','Mum');await S.fill('[name=ep]','08066699999');await S.click('form[data-form=onboard] button[type=submit]');
+ await S.waitForSelector('.grid3',{timeout:8000});
+ await S.click('[data-act=consent-ok]');await S.waitForTimeout(500);
+ t(!/Sponsored/.test(await S.textContent('body')),'no ads by default');
+ await op('adSave',{sponsor:'Mama Put',title:'Jollof special',text:'Behind Block C',url:'https://wa.me/2348000000000',cta:'Order'});await op('monetSave',{freeForStudents:false,adsOn:true});
+ await S.reload();await S.waitForSelector('.grid3');await S.waitForFunction(()=>/Sponsored/.test(document.body.innerText),null,{timeout:15000});
+ t(/Mama Put/.test(await S.textContent('body'))&&/Safety features never have ads/.test(await S.textContent('body')),'a labelled sponsor card shows on Home');
+ const href=await S.getAttribute('[data-act=ad-click]','href');t(href==='https://wa.me/2348000000000','the card opens only the sponsor link');
+ await S.click('[data-act=ad-hide]');t(!/Mama Put/.test(await S.textContent('body')),'the student can hide it');
+ await S.click('[data-act=go][data-to=me]');await S.click('[data-to=plus]');await S.waitForFunction(()=>/Safety is always free/.test(document.body.innerText),null,{timeout:8000});t(true,'the Plus page shows the safety promise');
+ t(/₦300/.test(await S.textContent('body')),'prices are shown');
+ await op('subGrant',{plan:'plus',who:'MNY/22/0001',months:1,naira:300});
+ await S.reload();await S.waitForSelector('.grid3');t(!/Sponsored/.test(await S.textContent('body')),'after paying for Plus there are no ads');
+ const g=(await op('monetGet')).result;t(g.ads[0].views>=1&&g.active.plus===1,'the operator sees views and the subscriber');
+ t(errs.length===0,'no script errors '+errs.slice(0,2).join('|'));await br.close();
+})();

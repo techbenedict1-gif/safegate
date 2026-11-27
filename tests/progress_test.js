@@ -1,0 +1,36 @@
+/* Students see their report / alert move: sent > received > seen > handling > help on the way > resolved. Run: node tests/progress_test.js */
+const C = require(__dirname + '/../js/core.js'); let T = Date.UTC(2026, 10, 21, 9, 0, 0); const db = {}; const pushes = [];
+const S = C.createServer(db, { now: () => T, notify(i) { pushes.push({ aud: i.audience, m: i.matric, p: i.payload }); } });
+let ok = 0; const t = (c, m) => { if (!c) { console.log('FAIL', m); process.exitCode = 1; } else ok++; };
+const tok = S.ictBootstrap(), run = (m, a) => S.ictRun({ token: tok, method: m, args: a || {}, ctx: () => ({}) });
+const adm = run('staffSetup', { name: 'Chief Ada' }); const O = S.rpc('login', { officer: 'Chief Ada', pin: adm.pin }).token;
+const stu = { matric: 'CSC/21/0001', name: 'Ben Doe', phone: '08012340001', emergency: { name: 'P', phone: '08099999999' } };
+const ing = (items) => S.rpc('ingest', { student: stu, deviceId: 'devA-1234567', items });
+const done = (r, k) => r.steps.filter((s) => s.key === k)[0].t;
+S.rpc('ingest', { student: stu, deviceId: 'devA-1234567', items: [] });
+S.rpc('pushSubscribe', { matric: stu.matric, deviceId: 'devA-1234567', sub: { endpoint: 'https://fcm.googleapis.com/fcm/send/abc123', keys: { p256dh: 'BPxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', auth: 'authsecret12345678' } } });
+let r = ing([{ id: 'rep-00000001', type: 'report', t: T, cat: 'theft', text: 'my bag was taken' }]);
+let mine = r.myReports[0];
+t(mine.stage === 'received' && done(mine, 'received') && !done(mine, 'seen'), 'a new report shows as received, not yet seen');
+T += 60e3; S.rpc('listReports', { token: O });
+r = ing([]); mine = r.myReports[0];
+t(mine.stage === 'seen' && done(mine, 'seen'), 'when security opens the inbox the student sees "seen"');
+t(pushes.some((x) => x.m === 'CSC/21/0001' && /seen/i.test(x.p.title + x.p.body)), 'the student gets a notification that it was seen');
+const id = db.reports[0].id; T += 60e3;
+S.rpc('updateReport', { token: O, id, stage: 'handling' }); mine = ing([]).myReports[0];
+t(mine.stage === 'handling' && done(mine, 'handling'), 'security is on it');
+S.rpc('updateReport', { token: O, id, stage: 'dispatched', note: 'Help is on the way.', pub: true }); mine = ing([]).myReports[0];
+t(mine.stage === 'dispatched' && done(mine, 'dispatched'), 'help is on the way');
+t(pushes.some((x) => /on the way/i.test(x.p.title)), 'the student is notified that help is on the way');
+const ref = db.reports[0].ref, tr = S.rpc('trackReport', { ref, anonKey: db.reports[0].anonKey });
+t(tr.stage === 'dispatched' && tr.steps.length === 6, 'tracking by reference shows the same steps');
+S.rpc('updateReport', { token: O, id, status: 'closed', note: 'Recovered', pub: true }); mine = ing([]).myReports[0];
+t(mine.stage === 'closed' && done(mine, 'closed'), 'resolved');
+// SOS
+r = ing([{ id: 'sos-00000001', type: 'sos', t: T, lat: 6.1, lng: 5.1 }]);
+t(r.sos && r.sos.stage === 'received' && r.sos.steps.length === 4, 'an SOS shows received');
+S.rpc('claimAlert', { token: O, key: 'sos:' + db.sos[0].id });
+r = ing([]); t(r.sos.stage === 'responding', 'when an officer claims it the student sees "responding"');
+t(pushes.some((x) => /responding/i.test(x.p.title)), 'and is notified');
+t(S.rpc('verifyAudit', { token: O }).ok, 'audit chain valid');
+console.log('progress: ' + ok + ' checks passed' + (process.exitCode ? ' WITH FAILURES' : ''));

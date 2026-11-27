@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="referrer" content="no-referrer">
+<title>SafeGate – ICT console</title>
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/css/app.css">
+<style>
+.stat span{color:var(--muted);font-size:.84rem;display:block}
+.main{max-width:1060px}
+.main>h1,.main .rowx h1{font-size:1.5rem}
+.rowx{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0}
+.rowx>*{flex:0 0 auto}
+.seg{display:flex;gap:4px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:4px;margin:10px 0 14px;overflow-x:auto;width:fit-content;max-width:100%}
+.seg button{border:0;background:none;color:var(--muted);font-weight:700;padding:8px 16px;border-radius:999px;cursor:pointer;white-space:nowrap;font-size:.92rem;min-height:38px}
+.seg button[aria-selected=true]{background:var(--brand);color:var(--brand-ink)}
+.seg.small button{padding:6px 12px;font-size:.85rem;min-height:32px}
+.hero .kv{grid-template-columns:repeat(auto-fit,minmax(120px,1fr))}
+.it{border-bottom:1px solid var(--line);padding:12px 0;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.it:last-child{border:0}.it .g{flex:1 1 220px;min-width:0;overflow-wrap:anywhere}
+.it small{color:var(--muted);display:block}
+.mono{font-family:ui-monospace,Menlo,Consolas,monospace;word-break:break-all}
+.card.flat{margin-bottom:10px}
+.msg{border-left:5px solid var(--line)}.msg.crit{border-left-color:var(--bad);background:var(--bad-soft)}
+.tip{background:var(--brand-soft);border-color:transparent}
+.empty{text-align:center;padding:26px 12px;color:var(--muted)}.empty .ei{font-size:2.2rem;margin-bottom:6px}.empty b{display:block;color:var(--ink)}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:12px;margin:12px 0}
+.hb{display:grid;grid-template-columns:minmax(90px,38%) 1fr 30px;gap:8px;align-items:center;margin:7px 0;font-size:.9rem}
+.hb .ht{height:10px;border-radius:99px;background:var(--line);overflow:hidden}.hb .ht i{display:block;height:100%;background:var(--brand);border-radius:99px}.hb b{text-align:right}
+.wk{display:flex;align-items:flex-end;gap:6px;height:90px}.wk>div{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;gap:3px}.wk i{display:block;width:100%;background:var(--brand);border-radius:6px 6px 2px 2px;min-height:3px}.wk small{font-size:.66rem;color:var(--muted)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.secret{font-size:1.8rem;letter-spacing:.14em;font-weight:800;text-align:center;padding:14px;border:2px dashed var(--brand);border-radius:14px;margin:10px 0;background:var(--brand-soft)}
+.main textarea{width:100%;min-height:110px;font:inherit;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+.main select{padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;min-height:48px}
+.main pre{white-space:pre-wrap;word-break:break-word;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;font-size:.82rem;max-height:340px;overflow:auto}
+.main details{margin:8px 0}.main summary{cursor:pointer;font-weight:700}
+.side .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.05rem}
+@media (max-width:860px){.side .nav{position:relative}.seg{width:100%}}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}
+.kpi{background:var(--brand-soft);border-radius:14px;padding:10px 12px}.kpi b{display:block;font-size:1.35rem}.kpi span{color:var(--muted);font-size:.8rem}
+#ovl{position:fixed;inset:0;background:rgba(10,20,30,.55);z-index:50;display:flex;align-items:flex-end;justify-content:center;overflow:auto;-webkit-overflow-scrolling:touch}
+#ovl .sheet{background:var(--bg);width:100%;max-width:560px;max-height:92vh;overflow:auto;border-radius:22px 22px 0 0;padding:18px 16px 28px;box-shadow:0 -10px 40px rgba(0,0,0,.25)}
+@media (min-width:700px){#ovl{align-items:center}#ovl .sheet{border-radius:22px}}
+.actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}
+</style>
+</head>
+<body>
+<div id="app"><p class="note" style="margin:20px">Opening the ICT console…</p></div>
+<script src="/lib/qrcode.js"></script>
+<script src="/js/poster.js"></script>
+<script src="/js/ict.js"></script>
+</body>
+</html>

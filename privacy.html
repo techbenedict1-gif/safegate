@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Privacy notice · SafeGate</title>
+<style>
+:root{--bg:#f4f8fa;--card:#fff;--ink:#0a2a38;--mute:#51666f;--brand:#0b5d7a;--line:#d9e3e8}
+@media (prefers-color-scheme:dark){:root{--bg:#0c1519;--card:#142229;--ink:#e8f1f4;--mute:#9db1b9;--brand:#5cc3e6;--line:#26383f}}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:720px;margin:0 auto;padding:24px 16px 60px}h1{margin:.2em 0}h2{margin:1.6em 0 .3em;color:var(--brand);font-size:1.1rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:10px 0}.mute{color:var(--mute)}li{margin:.3em 0}
+.pill{display:inline-block;background:var(--brand);color:#fff;border-radius:99px;padding:2px 12px;font-size:.85rem}
+</style></head><body><main>
+<p class="pill">Privacy notice</p><h1 id="t">SafeGate</h1><p class="mute" id="who">Loading…</p>
+<div class="card" id="plain"></div>
+<h2>What is collected, and why</h2>
+<div class="card"><ul>
+<li><b>Your name, matric number and phone number, and an emergency contact.</b> So the school knows who you are and who to call in an emergency.</li>
+<li><b>When you leave and enter the gate, and where you said you were going.</b> This replaces the paper register and helps find someone who goes missing.</li>
+<li><b>Your location</b>, only if you turn it on, only while you are outside after the evening tracking time, until you scan back in. Pressing the red emergency button shares your live location at once.</li>
+<li><b>Reports, photos, voice notes and videos you send</b> to security, only when you choose to send them.</li>
+<li><b>Health card</b> (optional): shown to responders only during your own emergency.</li>
+</ul></div>
+<h2>What we never do</h2>
+<div class="card"><ul><li>We never sell your data or share it with advertisers.</li><li>We show no ads and nothing is for sale to students <span id="free"></span></li><li>Your location is never used for anything except your safety.</li><li>Officers cannot open your location without choosing a reason. Every look is recorded and shown to you in the app.</li></ul></div>
+<h2>How long it is kept</h2><div class="card"><ul id="ret"></ul></div>
+<h2>Your rights, and how to use them</h2>
+<div class="card"><ul>
+<li><b>See your data:</b> in the app, Me &amp; privacy, Download my data.</li>
+<li><b>Take back your location data:</b> Erase my location history.</li>
+<li><b>Delete your account:</b> Me &amp; privacy, Delete my whole account. Safety records such as past emergencies stay with the school for its legal duty, but nothing in them points to you.</li>
+<li><b>Change your mind:</b> turn location sharing off at any time. It is as easy to turn off as on.</li>
+<li><b>Correct your details:</b> Me &amp; privacy, Edit my details.</li>
+<li><b>Under 18:</b> your location stays off until the school records your parent or guardian's agreement.</li>
+<li><b>Complain:</b> contact us below, or the Nigeria Data Protection Commission (ndpc.gov.ng).</li>
+</ul></div>
+<h2>Who is responsible</h2><div class="card" id="ctl"></div>
+<p class="mute" style="font-size:.85rem">Notice version <span id="v"></span>.</p>
+<script>
+(function(){function $(i){return document.getElementById(i)}function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+fetch('api/rpc',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({method:'privacyInfo',args:{}})}).then(function(r){return r.json()}).then(function(j){var d=j.result||j;
+$('t').textContent=(d.school||'School')+' · SafeGate';$('who').textContent='How '+(d.controller||d.school)+' looks after your information.';
+$('plain').innerHTML='<p style="margin:0">'+esc(d.text||'')+'</p>';
+$('free').textContent=d.free?'(SafeGate is free for every student).':'.';
+$('ret').innerHTML='<li>Location points: deleted after <b>'+d.retention.locationDays+' days</b>.</li><li>Gate records (the school register): <b>'+d.retention.tripDays+' days</b>.</li><li>Photos, voice notes and videos: <b>'+d.retention.mediaDays+' days</b>.</li><li>Anything deleted by staff sits in a recycle bin for <b>'+d.retention.binDays+' days</b>, then is gone for good.</li>';
+$('ctl').innerHTML='<p style="margin:0"><b>'+esc(d.controller||d.school)+'</b> decides how your data is used and is responsible for it.</p><p>Questions, or to use a right above: <b>'+esc(d.contact||'ask the security office')+'</b></p>';
+$('v').textContent=d.policyVersion}).catch(function(){$('who').textContent='This page needs an internet connection.'})})();
+</script></main></body></html>

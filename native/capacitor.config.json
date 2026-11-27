@@ -1,0 +1,13 @@
+{
+  "appId": "edu.yourschool.safegate",
+  "appName": "SafeGate",
+  "webDir": "www",
+  "server": {
+    "url": "https://gate.yourschool.edu",
+    "androidScheme": "https",
+    "allowNavigation": ["gate.yourschool.edu"]
+  },
+  "plugins": {
+    "PushNotifications": { "presentationOptions": ["badge", "sound", "alert"] }
+  }
+}

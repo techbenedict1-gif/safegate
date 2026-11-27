@@ -1,0 +1,41 @@
+# Builds the SafeGate Android app (APK) in the cloud. No Android Studio and no computer setup needed.
+# How: put this project on GitHub, open the "Actions" tab, choose "Build Android app", press "Run workflow",
+# type your https address, wait about 8 minutes, then download "safegate-apk" from the finished run.
+name: Build Android app
+on:
+  workflow_dispatch:
+    inputs:
+      server_url:
+        description: "Your SafeGate https address (example: https://gate.yourschool.edu.ng)"
+        required: true
+      app_id:
+        description: "App id (keep the default unless you publish on Play Store)"
+        required: true
+        default: "edu.yourschool.safegate"
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      SERVER_URL: ${{ inputs.server_url }}
+      APP_ID: ${{ inputs.app_id }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 17 }
+      - name: Optional Firebase file (phone alerts when the app is closed)
+        env:
+          GS: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: if [ -n "$GS" ]; then printf '%s' "$GS" > native/google-services.json; fi
+      - name: Prepare the app
+        run: |
+          case "$SERVER_URL" in https://*) ;; *) echo "The address must start with https://"; exit 1;; esac
+          cd native && chmod +x setup.sh brand.sh && ./setup.sh "$SERVER_URL" "$APP_ID"
+      - name: Build the APK
+        run: cd native/android && chmod +x gradlew && ./gradlew --no-daemon assembleDebug
+      - uses: actions/upload-artifact@v4
+        with:
+          name: safegate-apk
+          path: native/android/app/build/outputs/apk/debug/app-debug.apk

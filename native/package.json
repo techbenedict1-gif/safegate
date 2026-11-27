@@ -1,0 +1,21 @@
+{
+  "name": "safegate-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SafeGate Android/iOS wrapper (Capacitor). Loads your SafeGate server and adds background location + native phone alerts.",
+  "scripts": {
+    "sync": "cap sync",
+    "android": "cap open android",
+    "ios": "cap open ios"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.0.0",
+    "@capacitor/core": "^6.0.0",
+    "@capacitor/ios": "^6.0.0",
+    "@capacitor/push-notifications": "^6.0.0",
+    "@capacitor-community/background-geolocation": "^1.2.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.0.0"
+  }
+}
